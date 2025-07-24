@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Client 2</title>
+</head>
+<body>
+  <h2>Client 2</h2>
+  <input id="to" placeholder="Send to (e.g., client2)" />
+  <input id="msg" placeholder="Your message" />
+  <button onclick="sendMessage()">Send</button>
+
+  <pre id="log"></pre>
+
+  <script>
+    const clientId = 'client2'; // hardcoded ID for this file
+    const socket = new WebSocket('ws://localhost:3000');
+
+    socket.onopen = () => {
+      console.log('Connected');
+      socket.send(JSON.stringify({ type: 'register', id: clientId }));
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      document.getElementById('log').textContent += `\nFrom ${data.from}: ${data.message}`;
+    };
+
+    function sendMessage() {
+      const to = document.getElementById('to').value;
+      const message = document.getElementById('msg').value;
+
+      socket.send(JSON.stringify({
+        type: 'message',
+        from: clientId,
+        to,
+        message
+      }));
+    }
+  </script>
+</body>
+</html>
